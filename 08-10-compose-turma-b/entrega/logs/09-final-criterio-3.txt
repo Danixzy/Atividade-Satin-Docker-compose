@@ -1,0 +1,49 @@
+--- Critério 3: reserva continua após docker compose down + docker compose up -d
+$ docker compose down
+ Container turma-b-portal-1  Stopping
+ Container turma-b-portal-1  Stopped
+ Container turma-b-portal-1  Removing
+ Container turma-b-portal-1  Removed
+ Container turma-b-api-1  Stopping
+ Container turma-b-api-1  Stopped
+ Container turma-b-api-1  Removing
+ Container turma-b-api-1  Removed
+ Network turma-b_default  Removing
+ Network turma-b_default  Removed
+
+$ docker compose ps -a
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
+
+$ docker volume ls --filter name=turma-b
+DRIVER    VOLUME NAME
+local     turma-b_registros
+
+$ docker compose up -d
+ Network turma-b_default  Creating
+ Network turma-b_default  Created
+ Container turma-b-api-1  Creating
+ Container turma-b-api-1  Created
+ Container turma-b-portal-1  Creating
+ Container turma-b-portal-1  Created
+ Container turma-b-api-1  Starting
+ Container turma-b-api-1  Started
+ Container turma-b-portal-1  Starting
+ Container turma-b-portal-1  Started
+
+$ python3 -I ferramentas/navegador.py captura ../entrega/atvd-composer-b_criterio-3_apos-down-up.png
+#saude: ok
+#livros: Livro	Disponíveis	Reservados	Restantes
+Redes de computadores	3	1	2
+Sistemas operacionais	2	0	2
+Engenharia de software	5	0	5
+#resultado: 
+#reservas: 23000397-2-atvd-composer-b no livro 1 em 2026-10-08T22:50:07.277Z
+
+$ curl -s http://localhost:8081/api/reservas
+[
+  {
+    "livroId": 1,
+    "nome": "23000397-2-atvd-composer-b",
+    "criadaEm": "2026-10-08T22:50:07.277Z"
+  }
+]

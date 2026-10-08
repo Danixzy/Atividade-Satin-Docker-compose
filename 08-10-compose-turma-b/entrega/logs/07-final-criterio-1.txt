@@ -1,0 +1,30 @@
+### Execução final (compose.yaml corrigido), volume zerado antes do teste
+$ docker compose up -d
+ Network turma-b_default  Creating
+ Network turma-b_default  Created
+ Volume turma-b_registros  Creating
+ Volume turma-b_registros  Created
+ Container turma-b-api-1  Creating
+ Container turma-b-api-1  Created
+ Container turma-b-portal-1  Creating
+ Container turma-b-portal-1  Created
+ Container turma-b-api-1  Starting
+ Container turma-b-api-1  Started
+ Container turma-b-portal-1  Starting
+ Container turma-b-portal-1  Started
+
+$ docker compose ps
+NAME               IMAGE            COMMAND                  SERVICE   CREATED         STATUS         PORTS
+turma-b-api-1      turma-b-api      "docker-entrypoint.s…"   api       3 seconds ago   Up 2 seconds   3000/tcp
+turma-b-portal-1   turma-b-portal   "/docker-entrypoint.…"   portal    3 seconds ago   Up 2 seconds   127.0.0.1:8081->80/tcp
+
+--- Critério 1: página com API ok e 3 livros
+$ python3 -I ferramentas/navegador.py captura ../entrega/atvd-composer-b_criterio-1_pagina-ok.png
+#saude: ok
+#livros: Livro	Disponíveis	Reservados	Restantes
+Redes de computadores	3	0	3
+Sistemas operacionais	2	0	2
+Engenharia de software	5	0	5
+#resultado: 
+#reservas: Nenhuma reserva.
+

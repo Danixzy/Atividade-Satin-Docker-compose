@@ -1,0 +1,32 @@
+### Correção 1: API_URL http://127.0.0.1:3000 -> http://api:3000
+$ git diff --no-index ../entrega/compose.original.yaml compose.yaml
+diff --git a/../entrega/compose.original.yaml b/compose.yaml
+index 8be11e9..9350b33 100644
+--- a/../entrega/compose.original.yaml
++++ b/compose.yaml
+@@ -10,6 +10,6 @@ services:
+     ports:
+       - "127.0.0.1:8081:80"
+     environment:
+-      API_URL: "http://127.0.0.1:3000"
++      API_URL: "http://api:3000"
+     depends_on:
+       - api
+
+$ docker compose up -d
+ Container turma-b-api-1  Running
+ Container turma-b-portal-1  Recreate
+ Container turma-b-portal-1  Recreated
+ Container turma-b-portal-1  Starting
+ Container turma-b-portal-1  Started
+
+$ curl -s -i http://localhost:8081/api/saude | head -1
+HTTP/1.1 502 Bad Gateway
+
+$ docker compose logs portal | grep -E "error" | tail -2
+portal-1  | 2026/10/08 22:47:02 [error] 36#36: *1 connect() failed (111: Connection refused) while connecting to upstream, client: 172.18.0.1, server: , request: "GET /api/saude HTTP/1.1", upstream: "http://172.18.0.2:3000/saude", host: "localhost:8081"
+
+$ docker compose logs api
+api-1  | {"evento":"inicio","porta":3001}
+api-1  | {"evento":"requisicao","metodo":"GET","caminho":"/saude"}
+

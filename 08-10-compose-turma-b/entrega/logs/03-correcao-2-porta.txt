@@ -1,0 +1,76 @@
+### Correção 2: PORT 3001 -> 3000 (porta que o portal usa e que o Dockerfile da API declara em EXPOSE)
+$ git diff --no-index ../entrega/compose.original.yaml compose.yaml
+diff --git a/../entrega/compose.original.yaml b/compose.yaml
+index 8be11e9..91f3e9c 100644
+--- a/../entrega/compose.original.yaml
++++ b/compose.yaml
+@@ -2,7 +2,7 @@ services:
+   api:
+     build: ./api
+     environment:
+-      PORT: "3001"
++      PORT: "3000"
+     volumes:
+       - ./dados:/app/dados:ro
+   portal:
+@@ -10,6 +10,6 @@ services:
+     ports:
+       - "127.0.0.1:8081:80"
+     environment:
+-      API_URL: "http://127.0.0.1:3000"
++      API_URL: "http://api:3000"
+     depends_on:
+       - api
+
+$ docker compose up -d
+ Container turma-b-api-1  Recreate
+ Container turma-b-api-1  Recreated
+ Container turma-b-portal-1  Running
+ Container turma-b-api-1  Starting
+ Container turma-b-api-1  Started
+
+$ docker compose logs api | head -1
+api-1  | {"evento":"inicio","porta":3000}
+
+$ curl -s -i http://localhost:8081/api/saude
+HTTP/1.1 200 OK
+Server: nginx/1.31.6
+Date: Thu, 08 Oct 2026 22:47:20 GMT
+Content-Type: application/json; charset=utf-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+
+{
+  "status": "ok",
+  "turma": "B"
+}
+$ curl -s http://localhost:8081/api/livros
+{
+  "turma": "B",
+  "total": 3,
+  "itens": [
+    {
+      "id": 1,
+      "titulo": "Redes de computadores",
+      "disponiveis": 3,
+      "reservados": 0,
+      "restantes": 3
+    },
+    {
+      "id": 2,
+      "titulo": "Sistemas operacionais",
+      "disponiveis": 2,
+      "reservados": 0,
+      "restantes": 2
+    },
+    {
+      "id": 3,
+      "titulo": "Engenharia de software",
+      "disponiveis": 5,
+      "reservados": 0,
+      "restantes": 5
+    }
+  ]
+}
+$ curl -s http://localhost:8081/api/reservas
+[]

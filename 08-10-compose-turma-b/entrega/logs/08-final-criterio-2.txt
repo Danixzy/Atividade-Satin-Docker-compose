@@ -1,0 +1,21 @@
+--- Critério 2: reserva feita pelo formulário da página (Firefox headless via WebDriver)
+$ python3 -I ferramentas/navegador.py reserva ../entrega/atvd-composer-b_criterio-2_reserva.png 1 23000397-2-atvd-composer-b
+#saude: ok
+#livros: Livro	Disponíveis	Reservados	Restantes
+Redes de computadores	3	1	2
+Sistemas operacionais	2	0	2
+Engenharia de software	5	0	5
+#resultado: Reserva registrada
+#reservas: 23000397-2-atvd-composer-b no livro 1 em 2026-10-08T22:50:07.277Z
+
+$ docker compose logs api | grep POST
+api-1  | {"evento":"requisicao","metodo":"POST","caminho":"/reservas"}
+
+$ docker compose exec api cat /app/registros/reservas.json
+[
+  {
+    "livroId": 1,
+    "nome": "23000397-2-atvd-composer-b",
+    "criadaEm": "2026-10-08T22:50:07.277Z"
+  }
+]

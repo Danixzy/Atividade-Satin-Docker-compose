@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Biblioteca do campus</title>
+  <style>
+    body { font: 17px system-ui, sans-serif; max-width: 780px; margin: 40px auto; padding: 0 20px; line-height: 1.6; background: #f5f7fa; color: #203047; }
+    main { background: white; border: 1px solid #d6deea; padding: 28px; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 24px; }
+    td, th { text-align: left; padding: 8px; border-bottom: 1px solid #d6deea; }
+    .falha { color: #a3261b; font-weight: 600; }
+    .ok { color: #1d6b35; font-weight: 600; }
+    input, select, button { font: inherit; padding: 6px 10px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Biblioteca do campus</h1>
+    <p>Turma B. Estado da API: <span id="saude">consultando</span></p>
+    <h2>Livros</h2>
+    <div id="livros">consultando</div>
+    <h2>Reserva</h2>
+    <form id="form">
+      <select id="livro"></select>
+      <input id="nome" placeholder="RA-CODIGO" required>
+      <button>Reservar</button>
+    </form>
+    <p id="resultado"></p>
+    <h2>Reservas registradas</h2>
+    <div id="reservas">consultando</div>
+  </main>
+  <script>
+    const falha = (alvo, resposta) => {
+      alvo.innerHTML = '<span class="falha">Falha HTTP ' + resposta.status + ' em ' + resposta.url + '</span>'
+    }
+    const consultarRegistros = async () => {
+      const reservas = await fetch('/api/reservas')
+      const alvoReservas = document.querySelector('#reservas')
+      if (!reservas.ok) return falha(alvoReservas, reservas)
+      const lista = await reservas.json()
+      alvoReservas.textContent = lista.length === 0 ? 'Nenhuma reserva.'
+        : lista.map(i => i.nome + ' no livro ' + i.livroId + ' em ' + i.criadaEm).join(' | ')
+    }
+    const consultar = async () => {
+      consultarRegistros()
+      const saude = await fetch('/api/saude')
+      const alvoSaude = document.querySelector('#saude')
+      if (saude.ok) alvoSaude.innerHTML = '<span class="ok">ok</span>'
+      else falha(alvoSaude, saude)
+
+      const livros = await fetch('/api/livros')
+      const alvoLivros = document.querySelector('#livros')
+      if (!livros.ok) return falha(alvoLivros, livros)
+      const dados = await livros.json()
+      alvoLivros.innerHTML = '<table><tr><th>Livro</th><th>Disponíveis</th><th>Reservados</th><th>Restantes</th></tr>'
+        + dados.itens.map(e => '<tr><td>' + e.titulo + '</td><td>' + e.disponiveis + '</td><td>' + e.reservados + '</td><td>' + e.restantes + '</td></tr>').join('')
+        + '</table>'
+      document.querySelector('#livro').innerHTML = dados.itens.map(e => '<option value="' + e.id + '">' + e.titulo + '</option>').join('')
+    }
+    document.querySelector('#form').onsubmit = async evento => {
+      evento.preventDefault()
+      const resposta = await fetch('/api/reservas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ livroId: Number(document.querySelector('#livro').value), nome: document.querySelector('#nome').value })
+      })
+      const alvo = document.querySelector('#resultado')
+      if (resposta.ok) alvo.innerHTML = '<span class="ok">Reserva registrada</span>'
+      else falha(alvo, resposta)
+      consultar()
+    }
+    consultar()
+  </script>
+</body>
+</html>

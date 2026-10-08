@@ -1,0 +1,85 @@
+### Correção 3: volume nomeado "registros" montado em /app/registros
+$ git diff --no-index ../entrega/compose.original.yaml compose.yaml
+diff --git a/../entrega/compose.original.yaml b/compose.yaml
+index 8be11e9..146f6e7 100644
+--- a/../entrega/compose.original.yaml
++++ b/compose.yaml
+@@ -2,14 +2,18 @@ services:
+   api:
+     build: ./api
+     environment:
+-      PORT: "3001"
++      PORT: "3000"
+     volumes:
+       - ./dados:/app/dados:ro
++      - registros:/app/registros
+   portal:
+     build: ./portal
+     ports:
+       - "127.0.0.1:8081:80"
+     environment:
+-      API_URL: "http://127.0.0.1:3000"
++      API_URL: "http://api:3000"
+     depends_on:
+       - api
++
++volumes:
++  registros:
+
+$ docker compose config --quiet && echo "compose.yaml valido"
+compose.yaml valido
+
+$ docker compose up -d
+ Volume turma-b_registros  Creating
+ Volume turma-b_registros  Created
+ Container turma-b-api-1  Recreate
+ Container turma-b-api-1  Recreated
+ Container turma-b-portal-1  Running
+ Container turma-b-api-1  Starting
+ Container turma-b-api-1  Started
+
+$ curl -s -X POST -H 'Content-Type: application/json' -d '{"livroId":2,"nome":"RA-TESTE"}' http://localhost:8081/api/reservas
+{
+  "livroId": 2,
+  "nome": "RA-TESTE",
+  "criadaEm": "2026-10-08T22:48:04.251Z"
+}
+$ docker compose down
+ Container turma-b-portal-1  Stopping
+ Container turma-b-portal-1  Stopped
+ Container turma-b-portal-1  Removing
+ Container turma-b-portal-1  Removed
+ Container turma-b-api-1  Stopping
+ Container turma-b-api-1  Stopped
+ Container turma-b-api-1  Removing
+ Container turma-b-api-1  Removed
+ Network turma-b_default  Removing
+ Network turma-b_default  Removed
+
+$ docker compose up -d
+ Network turma-b_default  Creating
+ Network turma-b_default  Created
+ Container turma-b-api-1  Creating
+ Container turma-b-api-1  Created
+ Container turma-b-portal-1  Creating
+ Container turma-b-portal-1  Created
+ Container turma-b-api-1  Starting
+ Container turma-b-api-1  Started
+ Container turma-b-portal-1  Starting
+ Container turma-b-portal-1  Started
+
+$ curl -s http://localhost:8081/api/reservas
+[
+  {
+    "livroId": 2,
+    "nome": "RA-TESTE",
+    "criadaEm": "2026-10-08T22:48:04.251Z"
+  }
+]
+$ docker volume ls --filter name=turma-b
+DRIVER    VOLUME NAME
+local     turma-b_registros
+
+$ docker inspect turma-b-api-1 --format "{{json .Mounts}}"
+[{"Type":"bind","Source":"/home/daniel-andrade/Documentos/pedro-satin-docker-compose/08-10-compose-turma-b/turma-b/dados","Destination":"/app/dados","Mode":"ro","RW":false,"Propagation":"rprivate"},{"Type":"volume","Name":"turma-b_registros","Source":"/var/lib/docker/volumes/turma-b_registros/_data","Destination":"/app/registros","Driver":"local","Mode":"rw","RW":true,"Propagation":""}]
+

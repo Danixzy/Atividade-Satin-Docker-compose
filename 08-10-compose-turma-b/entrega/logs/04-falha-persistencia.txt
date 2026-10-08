@@ -1,0 +1,57 @@
+### Teste de persistência com as correções 1 e 2
+$ curl -s -X POST -H 'Content-Type: application/json' -d '{"livroId":2,"nome":"RA-TESTE"}' http://localhost:8081/api/reservas
+{
+  "livroId": 2,
+  "nome": "RA-TESTE",
+  "criadaEm": "2026-10-08T22:47:29.718Z"
+}
+$ curl -s http://localhost:8081/api/reservas
+[
+  {
+    "livroId": 2,
+    "nome": "RA-TESTE",
+    "criadaEm": "2026-10-08T22:47:29.718Z"
+  }
+]
+$ docker compose exec api cat /app/registros/reservas.json
+[
+  {
+    "livroId": 2,
+    "nome": "RA-TESTE",
+    "criadaEm": "2026-10-08T22:47:29.718Z"
+  }
+]
+$ docker compose down
+ Container turma-b-portal-1  Stopping
+ Container turma-b-portal-1  Stopped
+ Container turma-b-portal-1  Removing
+ Container turma-b-portal-1  Removed
+ Container turma-b-api-1  Stopping
+ Container turma-b-api-1  Stopped
+ Container turma-b-api-1  Removing
+ Container turma-b-api-1  Removed
+ Network turma-b_default  Removing
+ Network turma-b_default  Removed
+
+$ docker compose up -d
+ Network turma-b_default  Creating
+ Network turma-b_default  Created
+ Container turma-b-api-1  Creating
+ Container turma-b-api-1  Created
+ Container turma-b-portal-1  Creating
+ Container turma-b-portal-1  Created
+ Container turma-b-api-1  Starting
+ Container turma-b-api-1  Started
+ Container turma-b-portal-1  Starting
+ Container turma-b-portal-1  Started
+
+$ curl -s http://localhost:8081/api/reservas
+[]
+$ docker compose exec api ls -la /app/registros
+total 8
+drwxr-xr-x    2 root     root          4096 Oct  8 22:46 .
+drwxr-xr-x    1 root     root          4096 Oct  8 22:47 ..
+
+$ docker inspect turma-b-api-1 --format "{{json .Mounts}}"
+[{"Type":"bind","Source":"/home/daniel-andrade/Documentos/pedro-satin-docker-compose/08-10-compose-turma-b/turma-b/dados","Destination":"/app/dados","Mode":"ro","RW":false,"Propagation":"rprivate"}]
+

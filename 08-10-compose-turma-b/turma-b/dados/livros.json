@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "titulo": "Redes de computadores",
+    "disponiveis": 3
+  },
+  {
+    "id": 2,
+    "titulo": "Sistemas operacionais",
+    "disponiveis": 2
+  },
+  {
+    "id": 3,
+    "titulo": "Engenharia de software",
+    "disponiveis": 5
+  }
+]

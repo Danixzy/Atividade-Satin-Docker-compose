@@ -1,0 +1,15 @@
+services:
+  api:
+    build: ./api
+    environment:
+      PORT: "3001"
+    volumes:
+      - ./dados:/app/dados:ro
+  portal:
+    build: ./portal
+    ports:
+      - "127.0.0.1:8081:80"
+    environment:
+      API_URL: "http://127.0.0.1:3000"
+    depends_on:
+      - api

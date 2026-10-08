@@ -1,0 +1,22 @@
+### Critério 4: API sem porta publicada no host
+$ docker compose ps
+NAME               IMAGE            COMMAND                  SERVICE   CREATED          STATUS          PORTS
+turma-b-api-1      turma-b-api      "docker-entrypoint.s…"   api       13 seconds ago   Up 12 seconds   3000/tcp
+turma-b-portal-1   turma-b-portal   "/docker-entrypoint.…"   portal    13 seconds ago   Up 12 seconds   127.0.0.1:8081->80/tcp
+(exit=0)
+
+$ docker port turma-b-api-1
+(exit=0)
+
+$ curl -s -m 3 http://localhost:3000/saude
+(exit=7)
+
+$ curl -s -m 3 http://localhost:3001/saude
+(exit=7)
+
+$ curl -s http://localhost:8081/api/saude
+{
+  "status": "ok",
+  "turma": "B"
+}(exit=0)
+

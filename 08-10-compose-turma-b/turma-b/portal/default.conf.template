@@ -1,0 +1,15 @@
+server {
+    listen 80;
+    resolver 127.0.0.11 valid=5s;
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html;
+    }
+
+    location /api/ {
+        set $destino ${API_URL};
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_pass $destino;
+    }
+}

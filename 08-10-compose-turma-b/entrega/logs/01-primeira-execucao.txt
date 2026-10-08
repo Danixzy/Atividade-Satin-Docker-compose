@@ -1,0 +1,141 @@
+$ docker compose ps
+NAME               IMAGE            COMMAND                  SERVICE   CREATED         STATUS         PORTS
+turma-b-api-1      turma-b-api      "docker-entrypoint.s…"   api       7 seconds ago   Up 7 seconds   3000/tcp
+turma-b-portal-1   turma-b-portal   "/docker-entrypoint.…"   portal    7 seconds ago   Up 7 seconds   127.0.0.1:8081->80/tcp
+
+$ curl -s -o /dev/null -w "HTTP %{http_code}\n" http://localhost:8081/
+HTTP 200
+
+$ curl -s -i http://localhost:8081/api/saude
+HTTP/1.1 502 Bad Gateway
+Server: nginx/1.31.6
+Date: Thu, 08 Oct 2026 22:46:30 GMT
+Content-Type: text/html
+Content-Length: 157
+Connection: keep-alive
+
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.31.6</center>
+</body>
+</html>
+
+$ curl -s -i http://localhost:8081/api/livros
+HTTP/1.1 502 Bad Gateway
+Server: nginx/1.31.6
+Date: Thu, 08 Oct 2026 22:46:30 GMT
+Content-Type: text/html
+Content-Length: 157
+Connection: keep-alive
+
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.31.6</center>
+</body>
+</html>
+
+$ curl -s -i http://localhost:8081/api/reservas
+HTTP/1.1 502 Bad Gateway
+Server: nginx/1.31.6
+Date: Thu, 08 Oct 2026 22:46:30 GMT
+Content-Type: text/html
+Content-Length: 157
+Connection: keep-alive
+
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.31.6</center>
+</body>
+</html>
+
+$ docker compose logs api
+api-1  | {"evento":"inicio","porta":3001}
+
+$ docker compose logs portal
+portal-1  | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+portal-1  | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+portal-1  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+portal-1  | 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+portal-1  | 10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf
+portal-1  | /docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+portal-1  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+portal-1  | 20-envsubst-on-templates.sh: Running envsubst on /etc/nginx/templates/default.conf.template to /etc/nginx/conf.d/default.conf
+portal-1  | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+portal-1  | /docker-entrypoint.sh: Configuration complete; ready for start up
+portal-1  | 2026/10/08 22:46:23 [notice] 1#1: using the "epoll" event method
+portal-1  | 2026/10/08 22:46:23 [notice] 1#1: nginx/1.31.6
+portal-1  | 2026/10/08 22:46:23 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) 
+portal-1  | 2026/10/08 22:46:23 [notice] 1#1: OS: Linux 7.0.0-29-generic
+portal-1  | 2026/10/08 22:46:23 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1024:524288
+portal-1  | 2026/10/08 22:46:23 [notice] 1#1: start worker processes
+portal-1  | 2026/10/08 22:46:23 [notice] 1#1: start worker process 36
+portal-1  | 2026/10/08 22:46:23 [notice] 1#1: start worker process 37
+portal-1  | 2026/10/08 22:46:23 [notice] 1#1: start worker process 38
+portal-1  | 2026/10/08 22:46:23 [notice] 1#1: start worker process 39
+portal-1  | 2026/10/08 22:46:23 [notice] 1#1: start worker process 40
+portal-1  | 2026/10/08 22:46:23 [notice] 1#1: start worker process 41
+portal-1  | 2026/10/08 22:46:23 [notice] 1#1: start worker process 42
+portal-1  | 2026/10/08 22:46:23 [notice] 1#1: start worker process 43
+portal-1  | 172.18.0.1 - - [08/Oct/2026:22:46:30 +0000] "GET / HTTP/1.1" 200 3388 "-" "curl/8.5.0" "-"
+portal-1  | 2026/10/08 22:46:30 [error] 37#37: *2 connect() failed (111: Connection refused) while connecting to upstream, client: 172.18.0.1, server: , request: "GET /api/saude HTTP/1.1", upstream: "http://127.0.0.1:3000/saude", host: "localhost:8081"
+portal-1  | 172.18.0.1 - - [08/Oct/2026:22:46:30 +0000] "GET /api/saude HTTP/1.1" 502 157 "-" "curl/8.5.0" "-"
+portal-1  | 172.18.0.1 - - [08/Oct/2026:22:46:30 +0000] "GET /api/livros HTTP/1.1" 502 157 "-" "curl/8.5.0" "-"
+portal-1  | 2026/10/08 22:46:30 [error] 38#38: *4 connect() failed (111: Connection refused) while connecting to upstream, client: 172.18.0.1, server: , request: "GET /api/livros HTTP/1.1", upstream: "http://127.0.0.1:3000/livros", host: "localhost:8081"
+portal-1  | 2026/10/08 22:46:30 [error] 39#39: *6 connect() failed (111: Connection refused) while connecting to upstream, client: 172.18.0.1, server: , request: "GET /api/reservas HTTP/1.1", upstream: "http://127.0.0.1:3000/reservas", host: "localhost:8081"
+portal-1  | 172.18.0.1 - - [08/Oct/2026:22:46:30 +0000] "GET /api/reservas HTTP/1.1" 502 157 "-" "curl/8.5.0" "-"
+
+$ docker compose exec portal cat /etc/nginx/conf.d/default.conf
+server {
+    listen 80;
+    resolver 127.0.0.11 valid=5s;
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html;
+    }
+
+    location /api/ {
+        set $destino http://127.0.0.1:3000;
+        rewrite ^/api/(.*)$ /$1 break;
+        proxy_pass $destino;
+    }
+}
+
+$ docker compose exec portal sh -c "wget -qO- http://api:3000/saude; echo exit=\$?; wget -qO- http://api:3001/saude; echo; echo exit=\$?"
+wget: can't connect to remote host (172.18.0.2): Connection refused
+exit=1
+{
+  "status": "ok",
+  "turma": "B"
+}
+exit=0
+
+$ docker compose exec api sh -c "netstat -ltn 2>/dev/null || cat /proc/net/tcp"
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       
+tcp        0      0 127.0.0.11:39953        0.0.0.0:*               LISTEN      
+tcp        0      0 :::3001                 :::*                    LISTEN      
+
+$ docker inspect turma-b-api-1 --format "{{json .Mounts}}"
+[{"Type":"bind","Source":"/home/daniel-andrade/Documentos/pedro-satin-docker-compose/08-10-compose-turma-b/turma-b/dados","Destination":"/app/dados","Mode":"ro","RW":false,"Propagation":"rprivate"}]
+
+$ docker compose exec api ls -la /app /app/registros
+/app:
+total 28
+drwxr-xr-x    1 root     root          4096 Oct  8 22:46 .
+drwxr-xr-x    1 root     root          4096 Oct  8 22:46 ..
+drwxr-xr-x    2 node     node          4096 Oct  8 14:04 dados
+-rw-r--r--    1 root     root            83 Oct  8 14:09 package.json
+drwxr-xr-x    2 root     root          4096 Oct  8 22:46 registros
+-rw-r--r--    1 root     root          4575 Oct  8 14:09 server.ts
+
+/app/registros:
+total 8
+drwxr-xr-x    2 root     root          4096 Oct  8 22:46 .
+drwxr-xr-x    1 root     root          4096 Oct  8 22:46 ..
